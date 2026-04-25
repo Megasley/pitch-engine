@@ -26,6 +26,8 @@ import {
 } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
 import { type PitchPackage } from "@/lib/pitch"
+import { PitchDeckView } from "@/components/pitch-deck-view"
+import { ShotListView } from "@/components/shot-list-view"
 
 const CREATOR_ROLES = [
   { value: "Skit Creator", emoji: "🎭" },
@@ -36,12 +38,54 @@ const CREATOR_ROLES = [
   { value: "Music Video Director", emoji: "🎵" },
 ] as const
 
-const EXAMPLE_BRIEFS = [
-  "Indomie Detty December skit campaign for IG Reels",
-  "MTN wants a music video director for new data plan launch",
-  "Gtbank fashion week brand activation, looking for designers",
-  "Chivita wants product photography for new juice line",
-] as const
+const EXAMPLE_BRIEFS_BY_TYPE: Record<
+  (typeof CREATOR_ROLES)[number]["value"],
+  readonly [string, string, string, string]
+> = {
+  "Skit Creator": [
+    "Indomie Detty December skit campaign for IG Reels, Nigerian humour, 45–60s",
+    "GTBank – funny skit series on saving culture for young Lagos professionals on Reels",
+    "MTN – quick comedy skit to explain a new data bundle, street-to-studio vibe",
+    "Chivita – playful skit for a new juice line, family-friendly, shareable on TikTok",
+  ],
+  Filmmaker: [
+    "Documentary on Lagos street food culture, 8–10 min, brand-funded by a FMCG",
+    "Branded short film for a bank—emotional, cinematic, YouTube and cinema ads",
+    "Series of 3 micro-films for a telco launch, urban Nigeria, high production value",
+    "Fashion film for Lagos Fashion Week—runway B-roll + narrative, 2–3 minutes",
+  ],
+  Photographer: [
+    "Chivita product stills and lifestyle shots for a new juice line, bright FMCG look",
+    "Lookbook and campaign stills for a Lagos streetwear label, on-location and studio",
+    "Bank annual report and brand imagery—Lagos business life, corporate but warm",
+    "Restaurant chain food photography and social stills, overhead and table scenes",
+  ],
+  "Fashion Designer": [
+    "GTBank Lagos Fashion Week—runway set or booth activation, looking for a designer",
+    "Capsule collection collab with a drink brand, limited drop and launch event",
+    "Retail lookbook and influencer seeding for a new boutique in Lekki",
+    "Corporate wardrobe capsule for a fintech, smart casual, campaign + social assets",
+  ],
+  "Visual Artist": [
+    "Maggi or FMCG—limited mural or installation in a Lagos market hub",
+    "Brand commission: mixed-media pieces for a bank lobby and digital campaign",
+    "Festival or Detty December—immersive art piece for a beer or spirits pop-up",
+    "Chivita or similar—bottle art series and gallery-style social content",
+  ],
+  "Music Video Director": [
+    "MTN wants a music video for a new data plan, Afrobeats artist, premium look",
+    "Indomie or similar—playful MV-style spot with dance and street culture",
+    "Bank or telco—anthem or hero film with full MV treatment and artist feature",
+    "Brand live session series—Nigerian artist + product placement, 3 x performance films",
+  ],
+}
+
+type CreatorValue = (typeof CREATOR_ROLES)[number]["value"]
+
+function getExampleBriefsForType(creatorType: string): readonly string[] {
+  const key = creatorType as CreatorValue
+  return EXAMPLE_BRIEFS_BY_TYPE[key] ?? EXAMPLE_BRIEFS_BY_TYPE["Skit Creator"]
+}
 
 const PHASES = [
   "Analyzing brief",
@@ -346,31 +390,42 @@ export function Generator() {
   const canGenerate = Boolean(brief.trim()) && !generating
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/[0.04] text-foreground">
       <div className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6 sm:py-16">
-        <header className="mb-10 space-y-2 text-center sm:mb-12 sm:text-left">
+        <header
+          className="mb-10 space-y-2 text-center sm:mb-12 sm:text-left motion-safe:animate-ui-fade-up"
+          style={{ animationDelay: "0ms" }}
+        >
           <h1 className="inline-flex items-center justify-center gap-2.5 text-3xl font-semibold tracking-tight sm:justify-start sm:text-4xl md:text-5xl">
             <span
-              className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary sm:size-10"
+              className="inline-flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/12 text-primary shadow-sm ring-1 ring-primary/20 transition-transform duration-300 motion-safe:hover:scale-[1.03] sm:size-10"
               aria-hidden
             >
               <Sparkles className="size-5 sm:size-6" strokeWidth={1.75} />
             </span>
-            <span>Pitch Engine</span>
+            <span className="text-foreground">Pitch Engine</span>
           </h1>
-          <p className="text-base text-muted-foreground sm:text-lg">
+          <p className="text-base text-muted-foreground/95 sm:text-lg">
             Turn any brand brief into a pitch-ready package
           </p>
         </header>
 
         {error && !generating && (
-          <Alert variant="destructive" className="mb-8" role="alert">
+          <Alert
+            variant="destructive"
+            className="mb-8 motion-safe:animate-ui-fade-up"
+            role="alert"
+          >
             <AlertTitle>Could not generate</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
 
-        <section className="w-full max-w-full space-y-6 sm:space-y-8" aria-label="Inputs">
+        <section
+          className="w-full max-w-full space-y-6 rounded-2xl border border-border/50 bg-card/30 p-5 shadow-sm ring-1 ring-border/30 backdrop-blur-sm sm:space-y-8 sm:p-7 motion-safe:animate-ui-fade-up"
+          style={{ animationDelay: "60ms" }}
+          aria-label="Inputs"
+        >
           <div className="space-y-3">
             <label className="text-sm font-medium leading-none" htmlFor="role">
               I am a&hellip;
@@ -378,7 +433,7 @@ export function Generator() {
             <Select value={creatorType} onValueChange={setCreatorType}>
               <SelectTrigger
                 id="role"
-                className="h-11 w-full focus-visible:ring-2 focus-visible:ring-ring"
+                className="h-11 w-full border-border/60 bg-background/60 transition-colors focus-visible:ring-2 focus-visible:ring-ring hover:border-primary/30"
                 aria-label="Creator type"
               >
                 <div className="flex min-w-0 items-center gap-2.5 text-left">
@@ -417,15 +472,20 @@ export function Generator() {
               placeholder="e.g. Indomie wants a fun Detty December skit campaign for Instagram Reels targeting 18-28 year olds in Lagos"
               rows={6}
               className={cn(
-                "min-h-36 w-full max-w-full resize-y text-base leading-relaxed",
-                "transition-[min-height] duration-200 ease-out",
+                "min-h-36 w-full max-w-full resize-y border-border/60 bg-background/60 text-base leading-relaxed",
+                "transition-[min-height,box-shadow,border-color] duration-200 ease-out",
                 "focus-visible:min-h-56 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                "hover:border-border focus-visible:border-primary/40",
               )}
               value={brief}
               onChange={(e) => setBrief(e.target.value)}
             />
-            <div className="flex flex-wrap gap-2" role="group" aria-label="Example briefs">
-              {EXAMPLE_BRIEFS.map((example) => {
+            <div
+              className="flex flex-wrap gap-2"
+              role="group"
+              aria-label={`Example briefs for ${creatorType}`}
+            >
+              {getExampleBriefsForType(creatorType).map((example) => {
                 const active = brief === example
                 return (
                   <button
@@ -443,9 +503,10 @@ export function Generator() {
                     <Badge
                       variant="secondary"
                       className={cn(
-                        "whitespace-normal border border-transparent px-3 py-1.5 text-xs font-normal leading-snug",
+                        "whitespace-normal border border-border/50 bg-secondary/50 px-3 py-1.5 text-xs font-normal leading-snug transition-all duration-200",
+                        "hover:border-primary/25 hover:bg-secondary/80",
                         active &&
-                          "border-primary bg-primary/5 text-foreground ring-1 ring-primary/30",
+                          "border-primary bg-primary/8 text-foreground ring-1 ring-primary/35",
                       )}
                     >
                       {example}
@@ -458,9 +519,9 @@ export function Generator() {
 
           <Button
             className={cn(
-              "h-12 w-full max-w-full text-base font-medium focus-visible:ring-2 focus-visible:ring-offset-2",
+              "h-12 w-full max-w-full text-base font-medium transition-all duration-200 focus-visible:ring-2 focus-visible:ring-offset-2",
               canGenerate &&
-                "bg-gradient-to-r from-primary via-primary to-primary/80 text-primary-foreground shadow-sm hover:from-primary/95 hover:via-primary/90 hover:to-primary/75",
+                "bg-gradient-to-r from-primary via-primary to-primary/80 text-primary-foreground shadow-md shadow-primary/20 hover:from-primary/95 hover:via-primary/90 hover:to-primary/75 hover:shadow-lg hover:shadow-primary/25",
             )}
             size="lg"
             onClick={onGenerate}
@@ -487,12 +548,13 @@ export function Generator() {
 
         {!error && !result && !generating && (
           <div
-            className="mt-10 flex flex-col items-center justify-center border-t border-border/50 py-10 text-center"
+            className="mt-10 flex flex-col items-center justify-center rounded-2xl border border-dashed border-border/50 bg-card/20 py-12 text-center motion-safe:animate-ui-fade-up"
+            style={{ animationDelay: "100ms" }}
             role="status"
             aria-live="polite"
           >
             <Sparkles
-              className="mb-3 size-16 text-primary/50"
+              className="mb-3 size-16 text-primary/60 motion-safe:animate-ui-soft-pulse"
               strokeWidth={1.25}
               aria-hidden
             />
@@ -504,7 +566,7 @@ export function Generator() {
 
         {generating && (
           <section
-            className="mt-10 border-t border-border pt-10 sm:mt-12"
+            className="mt-10 rounded-2xl border border-border/40 bg-card/20 p-5 pt-8 motion-safe:animate-ui-fade-up sm:mt-12 sm:p-6"
             aria-labelledby="progress-label"
             aria-live="polite"
             aria-atomic="false"
@@ -555,12 +617,13 @@ export function Generator() {
 
         {result && !generating && (
           <section
-            className="mt-10 border-t border-border pt-10 sm:mt-12"
+            className="mt-10 motion-safe:animate-ui-fade-up sm:mt-12"
+            style={{ animationDelay: "40ms" }}
             aria-label="Your pitch package"
           >
-            <Card className="border border-border/80 bg-card/80 shadow-sm">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-xl">Your pitch package</CardTitle>
+            <Card className="overflow-hidden border border-border/60 bg-card/90 shadow-lg shadow-black/20 ring-1 ring-border/30 transition-shadow duration-300 hover:shadow-xl hover:ring-primary/15">
+              <CardHeader className="border-b border-border/40 bg-gradient-to-r from-card to-card/60 pb-4">
+                <CardTitle className="text-xl tracking-tight">Your pitch package</CardTitle>
                 <CardDescription>
                   Copy or download. Remix asks for a new angle at a higher
                   temperature.
@@ -575,34 +638,34 @@ export function Generator() {
                   <div className="min-w-0 max-w-full overflow-x-auto scroll-smooth rounded-full pb-1 [-ms-overflow-style:none] [scrollbar-width:thin] sm:overflow-visible">
                     <TabsList
                       className={cn(
-                        "inline-flex w-max min-w-full flex-nowrap gap-1 rounded-full border border-border/60 bg-muted/50 p-1",
+                        "inline-flex w-max min-w-full flex-nowrap gap-0.5 rounded-full border border-border/50 bg-muted/40 p-1",
                         "sm:grid sm:w-full sm:max-w-full sm:grid-cols-4",
                       )}
                     >
                       <TabsTrigger
                         value="concepts"
-                        className="shrink-0 rounded-full px-3 py-2 text-xs after:hidden data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow sm:text-sm"
+                        className="shrink-0 rounded-full px-3 py-2 text-xs transition-all duration-200 after:hidden data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md sm:text-sm"
                         aria-label="View concepts"
                       >
                         Concepts
                       </TabsTrigger>
                       <TabsTrigger
                         value="shot"
-                        className="shrink-0 rounded-full px-3 py-2 text-xs after:hidden data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow sm:text-sm"
+                        className="shrink-0 rounded-full px-3 py-2 text-xs transition-all duration-200 after:hidden data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md sm:text-sm"
                         aria-label="View shot list"
                       >
                         Shot List
                       </TabsTrigger>
                       <TabsTrigger
                         value="deck"
-                        className="shrink-0 rounded-full px-3 py-2 text-xs after:hidden data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow sm:text-sm"
+                        className="shrink-0 rounded-full px-3 py-2 text-xs transition-all duration-200 after:hidden data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md sm:text-sm"
                         aria-label="View pitch deck"
                       >
                         Pitch Deck
                       </TabsTrigger>
                       <TabsTrigger
                         value="email"
-                        className="shrink-0 rounded-full px-3 py-2 text-xs after:hidden data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow sm:text-sm"
+                        className="shrink-0 rounded-full px-3 py-2 text-xs transition-all duration-200 after:hidden data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md sm:text-sm"
                         aria-label="View email"
                       >
                         Email
@@ -623,7 +686,8 @@ export function Generator() {
                       {result.concepts.map((c, i) => (
                         <div
                           key={`${c.title}-${i}`}
-                          className="relative rounded-xl border border-border/70 bg-background/60 p-5 pt-8"
+                          className="relative motion-safe:animate-ui-fade-up rounded-xl border border-border/60 bg-gradient-to-b from-card/80 to-card/50 p-5 pt-8 shadow-sm transition-all duration-300 hover:border-primary/20 hover:shadow-md"
+                          style={{ animationDelay: `${120 + i * 55}ms` }}
                         >
                           <Badge
                             className="absolute left-3 top-3 h-6 min-w-6 justify-center bg-primary/15 px-1.5 text-xs font-medium text-foreground"
@@ -666,42 +730,9 @@ export function Generator() {
                     copyLabel="Copy shot list to clipboard"
                     downloadLabel="Download shot list as a text file"
                   >
-                    <ol className="relative m-0 list-none space-y-0 border-l-2 border-border/80 pl-6">
-                      {result.shotList.map((s, i) => (
-                        <li
-                          key={`${s.scene}-${i}`}
-                          className="relative pb-8 pl-1 last:pb-0"
-                        >
-                          <div
-                            className="absolute -left-[calc(0.5rem+5px)] top-0 flex size-6 items-center justify-center rounded-full border-2 border-primary/40 bg-primary/10 text-xs font-medium text-foreground"
-                            aria-label={`Shot ${i + 1}`}
-                          >
-                            {i + 1}
-                          </div>
-                          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                            Scene: {s.scene}
-                          </p>
-                          <ul className="mt-2 space-y-2 text-sm">
-                            <li>
-                              <span className="text-muted-foreground">Shot: </span>
-                              {s.shotType}
-                            </li>
-                            <li>
-                              <span className="text-muted-foreground">Setting: </span>
-                              {s.setting}
-                            </li>
-                            <li>
-                              <span className="text-muted-foreground">Props: </span>
-                              {s.props}
-                            </li>
-                            <li>
-                              <span className="text-muted-foreground">Direction: </span>
-                              {s.direction}
-                            </li>
-                          </ul>
-                        </li>
-                      ))}
-                    </ol>
+                    <div className="mt-1 rounded-xl border border-border/30 bg-primary/[0.02] p-1 sm:p-2">
+                      <ShotListView shots={result.shotList} />
+                    </div>
                   </TabExport>
 
                   <TabExport
@@ -713,39 +744,8 @@ export function Generator() {
                     copyLabel="Copy pitch deck to clipboard"
                     downloadLabel="Download pitch as Markdown file"
                   >
-                    <div className="grid grid-cols-1 gap-5 rounded-xl border border-border/60 bg-background/50 p-5 text-sm leading-relaxed sm:grid-cols-2">
-                      <div>
-                        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                          Concept
-                        </p>
-                        <p className="mt-1">{result.pitchDeck.concept}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                          Audience
-                        </p>
-                        <p className="mt-1">{result.pitchDeck.audience}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                          Deliverables
-                        </p>
-                        <p className="mt-1">{result.pitchDeck.deliverables}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                          Suggested fee range
-                        </p>
-                        <p className="mt-1">{result.pitchDeck.feeRange}</p>
-                      </div>
-                      <div className="sm:col-span-2">
-                        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                          Why this creative
-                        </p>
-                        <p className="mt-1">
-                          {result.pitchDeck.whyThisCreative}
-                        </p>
-                      </div>
+                    <div className="mt-1 rounded-xl border border-border/30 bg-primary/[0.03] p-1 sm:p-2">
+                      <PitchDeckView deck={result.pitchDeck} />
                     </div>
                   </TabExport>
 
@@ -758,21 +758,21 @@ export function Generator() {
                     copyLabel="Copy full email including subject to clipboard"
                     downloadLabel="Download email as a text file"
                   >
-                    <div className="space-y-4 rounded-md border border-border/80 bg-muted/30 p-4">
+                    <div className="space-y-4 rounded-xl border border-border/50 bg-gradient-to-b from-card/60 to-background/30 p-4 sm:p-5 motion-safe:animate-ui-fade-up">
                       <div>
-                        <p className="text-xs font-medium text-muted-foreground">
-                          Subject:
+                        <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-primary/80">
+                          Subject
                         </p>
-                        <p className="mt-1 text-sm font-medium text-foreground/95">
+                        <p className="mt-1.5 text-sm font-medium text-foreground/95">
                           {result.email.subject}
                         </p>
                       </div>
                       <div>
-                        <p className="text-xs font-medium text-muted-foreground">
+                        <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-primary/80">
                           Body
                         </p>
                         <pre
-                          className="mt-2 whitespace-pre-wrap font-mono text-sm leading-relaxed text-muted-foreground [font-size:0.9rem] sm:[font-size:0.875rem]"
+                          className="mt-2 max-h-[min(50vh,28rem)] overflow-y-auto rounded-lg border border-border/40 bg-background/50 p-3 whitespace-pre-wrap font-mono text-sm leading-relaxed text-muted-foreground [font-size:0.9rem] sm:[font-size:0.875rem]"
                         >
                           {result.email.body}
                         </pre>

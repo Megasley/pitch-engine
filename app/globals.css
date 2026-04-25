@@ -133,14 +133,75 @@
 
 @layer components {
   [role="tabpanel"][data-state="active"] {
-    animation: tab-fade-in 150ms ease-out;
+    animation: tab-fade-in 180ms ease-out;
   }
   @keyframes tab-fade-in {
     from {
-      opacity: 0.4;
+      opacity: 0.35;
+      transform: translateY(2px);
     }
     to {
       opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes pitch-deck-in {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .animate-pitch-deck-in {
+    animation: pitch-deck-in 0.55s ease backwards;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .animate-pitch-deck-in {
+      animation: none;
+      opacity: 1;
+    }
+  }
+
+  @keyframes ui-fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .animate-ui-fade-up {
+    animation: ui-fade-up 0.5s ease backwards;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .animate-ui-fade-up {
+      animation: none;
+      opacity: 1;
+    }
+  }
+
+  @keyframes ui-soft-pulse {
+    0%,
+    100% {
+      opacity: 0.45;
+    }
+    50% {
+      opacity: 0.75;
+    }
+  }
+  .animate-ui-soft-pulse {
+    animation: ui-soft-pulse 2.5s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .animate-ui-soft-pulse {
+      animation: none;
+      opacity: 0.55;
     }
   }
 }
