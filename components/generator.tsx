@@ -424,14 +424,13 @@ export function Generator() {
               value={brief}
               onChange={(e) => setBrief(e.target.value)}
             />
-            <div className="flex flex-wrap gap-2" role="list" aria-label="Example briefs">
+            <div className="flex flex-wrap gap-2" role="group" aria-label="Example briefs">
               {EXAMPLE_BRIEFS.map((example) => {
                 const active = brief === example
                 return (
                   <button
                     key={example}
                     type="button"
-                    role="listitem"
                     onClick={() => setBrief(example)}
                     className={cn(
                       "text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
